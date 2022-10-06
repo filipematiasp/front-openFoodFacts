@@ -1,5 +1,7 @@
 <template>
-  <FoodCard />
+  <div class="container">
+    <FoodCard />
+  </div>
 </template>
 
 <script>
