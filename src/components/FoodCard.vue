@@ -1,18 +1,24 @@
 <template>
-    <div class="row">
-        <div v-for="product in products" :key="product._id" class="card" style="width: 12rem;">
-            <img :src="product.image_small_url" class="card-img-top" alt="black dog">
-            <div class="card-body">
-                <h5 class="card-title">{{ product.product_name }}</h5>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" @click="createModal(product)">Go somewhere</button>
+    <div class="row row-cols-5 g-5">
+        <div v-for="product in products" :key="product._id" class="col">
+            <div class="card h-100 text-center">
+                <div class="wrap-img">
+                    <img :src="product.image_small_url" class="card-img-top">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.product_name }}</h5>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" @click="createModal(product)">Ver detalhes</button>
+                </div>
             </div>
         </div>
     </div>
+
     <nav>
         <ul class="pagination justify-content-center">
-            <li class="page-item disabled"><a class="page-link">Previous</a></li>
-            <li v-for="index in sizeProducts" :key="index" class="page-item"><a class="page-link" href="#">{{ index  }}</a></li>
-            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+            <li class="page-item disabled"><a class="page-link" @click="loadProducts('previous')">Previous</a></li>
+            <li class="page-item"><a class="page-link" href="#" @click="loadProducts('next')">Next</a></li>
         </ul>
     </nav>
 
@@ -93,10 +99,19 @@ const sizeProducts = ref()
 const products = ref([])
 let modalProductDescription = ref({})
 let readonly = ref(true)
+let indexNavBar = ref(0)
 
 function createModal (product) {
     console.log(product);
     modalProductDescription.value = product
+}
+
+function loadProducts (pageNumber) {
+    api.post("/products",{pageNumber}).then((response) => {
+        products.value = response.data.products
+        sizeProducts.value = response.data.sizeProducts / 10
+    })
+    indexNavBar.value = pageNumber
 }
 
 function toggleReadonly () {
@@ -118,4 +133,13 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.wrap-img {
+    width: 80%;
+    height: 80%;
+    overflow: hidden;
+}
+
+.wrap-img img {
+    width: 100%
+}
 </style>
